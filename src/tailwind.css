@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  input, button, select {
+    @apply focus:outline-none text-base;
+  }
+
+  body {
+    @apply text-trueGray-800 bg-white;
+  }
+
+  h4 {
+    @apply text-lg;
+  }
+}
+
+@layer components {
+  .img-cover {
+    @apply w-full h-full object-cover;
+  }
+
+  .img-full {
+    @apply w-full h-full;
+  }
+
+  .bg-absolute {
+    @apply absolute w-full h-full top-0 left-0;
+  }
+
+  .icon-bar {
+    @apply w-full h-full flex items-center justify-center;
+  }
+  
+}
+
+@layer utilities {
+  /* default */
+  .align-sub {
+    vertical-align: sub;
+  }
+
+
+  /* button */
+  
+}
