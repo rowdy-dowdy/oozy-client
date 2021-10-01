@@ -6,7 +6,7 @@
 
     <transition name="fade">
       <div v-if="showModal" @click.prevent="showModal = false"  class="fixed w-screen h-screen overflow-y-auto left-0 top-0 bottom-0 bg-black/50 z-20">
-        <div @click.prevent="" class="modal absolute min-w-[280px] max-w-[70%] min-h-full top-0 bg-white">
+        <div @click.stop="" class="modal absolute min-w-[280px] max-w-[70%] min-h-full top-0 bg-white">
           <div class="flex px-4 py-2 space-x-4 border-b">
             <div class="flex-grow min-w-0">
               <h2 class="text-lg font-semibold truncate">Thông tin tài khoản</h2>
@@ -34,8 +34,8 @@
             </div>
 
             <router-link :to="`/${user.username}`" class="block text-sm py-2">
-              <h3 class="font-semibold truncate text-base">Việt Hùng</h3>
-              <p class="text-gray-600 truncate">@VietHung413313</p>
+              <h3 class="font-semibold truncate text-base">{{ user.name }}</h3>
+              <p class="text-gray-600 truncate">@{{ user.username }}</p>
             </router-link>
 
             <div class="flex">
@@ -53,12 +53,12 @@
           <!-- list -->
           <ul class="flex flex-col">
             <li>
-              <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-violet-100">
+              <router-link :to="`/${user.username}`" class="flex items-center space-x-3 px-4 py-3 hover:bg-violet-100">
                 <span class="flex-none text-xl">
                   <i class='bx bx-user' ></i>
                 </span>
                 <span>Hồ sơ</span>
-              </a>
+              </router-link>
             </li>
             <li>
               <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-violet-100">

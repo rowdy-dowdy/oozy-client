@@ -8,7 +8,7 @@
 
       <div class="absolute w-full h-full top-0 left-0 mix-blend-exclusion bg-gradient-to-br from-lime-500 to-green-300"></div>
     </div>
-    <div class="relative w-full md:w-[45%] max-w-[600px] h-full flex items-center">
+    <div class="relative w-full mx-auto md:mx-0 md:w-[45%] max-w-[600px] h-full flex items-center">
       <div class="flex max-h-screen overflow-auto">
         <div class="h-max px-12 pt-6 pb-24 xs:pb-6">
           <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800">Đang diễn ra ngay bây giờ. Tham gia Oozy hôm nay.</h2>
@@ -39,14 +39,11 @@ export default defineComponent({
     for(let i = 0; i < 20; i++) {
       randomLogo = [...randomLogo, {
         size: Math.random(3) * (7) + 3,
-        x: Math.random(3) * (95),
+        x: Math.random(3) * (90),
         y:Math.random(3) * (100),
         time: Math.random(3) * (3) + 3
       }]
-    } 
-
-    console.log(randomLogo);
-    
+    }
 
     return { randomLogo }
   },

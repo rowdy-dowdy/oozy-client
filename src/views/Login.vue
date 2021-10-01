@@ -1,6 +1,9 @@
 <template>
-  <div @click.prevent="$router.go(-1)" class="fixed top-0 left-0 w-full h-screen bg-black/30 overflow-y-auto">
-    <div @click.prevent.stop="" class="w-full max-w-[450px] mx-auto bg-white my-12 px-8 py-8 rounded-xl">
+  <div @click.prevent="$router.push('/')" class="fixed top-0 left-0 w-full h-screen bg-black/30 overflow-y-auto">
+    <div @click.stop="" class="relative w-full h-full md:h-inherit md:max-w-[450px] mx-auto bg-white md:my-12 px-8 py-8 md:rounded-xl">
+      <div class="absolute md:hidden right-8 top-4 rounded-md px-4 py-1 bg-violet-500 text-white">
+        <button @click.prevent.stop="$router.push('/')">Đóng</button>
+      </div>
       <div class="w-12">
         <img src="../assets/logo.png" alt="logo" class="w-full">
       </div>
@@ -40,6 +43,7 @@
             </label>
           </div>
         </div>
+        <p v-if="textLoginError != ''" class="mt-4 text-red-500 text-base">*{{textLoginError}}</p>
         <div class="mt-6">
           <button :disabled="!isSubmit || isLoading" type="submit"
             class="w-[calc(100%+.5rem)] h-[52px] rounded-full bg-violet-600
@@ -62,13 +66,19 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 export default defineComponent({
   setup() {
+    const store = useStore()
+    const router = useRouter()
+
     var username = ref<string>('')
     var password = ref<string>('')
     var isSubmit = ref<boolean>(false)
     var isLoading = ref<boolean>(false)
+    var textLoginError = ref('')
 
     watch([username, password], ([newUsername, newPassword]) => {
       if (newUsername != '' && newPassword != '')
@@ -80,19 +90,24 @@ export default defineComponent({
     // SUBMIT FORM LOGIN
     const submit = async () => {
       isLoading.value = true
+      textLoginError.value = ''
       try {
-        let temp = new Promise(resolve => setTimeout(resolve,2000))
-        await temp
-        console.log('submiting');
+        const result = await store.dispatch('user/login', {
+          username: username.value,
+          password: password.value
+        })
+        
+        router.push('/home')
+
       } catch (err) {
-        console.log(err);
+        textLoginError.value = err.message
       } finally {
         isLoading.value = false
       }
     }
 
     return {
-      username,password,isSubmit,isLoading,submit
+      username,password,isSubmit,isLoading,submit,textLoginError
     }
   },
 })

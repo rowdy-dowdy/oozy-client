@@ -164,7 +164,7 @@
 
             <div class="hidden flex-grow min-w-0 xl:flex space-x-2 items-center">
               <div class="flex-grow min-w-0 text-sm">
-                <h3 class="font-semibold truncate">{{ user.realName }}</h3>
+                <h3 class="font-semibold truncate">{{ user.name }}</h3>
                 <p class="text-gray-600 truncate">@{{ user.username }}</p>
               </div>
               <div class="flex-none">
@@ -186,7 +186,7 @@
 
             <div class="flex-grow min-w-0 flex space-x-2 items-center">
               <div class="flex-grow min-w-0 text-sm">
-                <h3 class="font-semibold truncate">{{ user.realName }}</h3>
+                <h3 class="font-semibold truncate">{{ user.name }}</h3>
                 <p class="text-gray-600 truncate">@{{ user.username }}</p>
               </div>
               <div class="flex-none">
@@ -202,7 +202,7 @@
               <a href="#" class="block px-3 py-4 hover:bg-gray-100">Thêm một tài khoản hiện có</a>
             </li>
             <li class="">
-              <a href="#" class="block px-3 py-4 hover:bg-gray-100">
+              <a @click.prevent.stop="logout()" href="#" class="block px-3 py-4 hover:bg-gray-100">
                 Đăng xuất
                 <span>@{{ user.username }}</span>
               </a>
@@ -222,11 +222,13 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
 export default defineComponent({
   setup() {
     const store = useStore()
+    const router = useRouter()
 
     var menuUserShow = ref<boolean>(false)
     const dropdownHiden = () => {
@@ -236,7 +238,19 @@ export default defineComponent({
     const user = computed(() => store.state.user.user)
     var idMessagesUsed = computed(() => store.state.messages.idMessagesUsed)
 
-    return { menuUserShow, dropdownHiden, user, idMessagesUsed }
+    async function logout () {
+      try {
+
+        await store.dispatch('user/logout')
+        router.push('/')
+
+      } catch (err) {
+        console.log(err);
+      }
+
+    }
+
+    return { menuUserShow, dropdownHiden, user, idMessagesUsed, logout }
   },
 })
 </script>

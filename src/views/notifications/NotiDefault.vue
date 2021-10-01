@@ -3,7 +3,7 @@
     <li class="border-b">
       <a href="#" 
         @click.prevent="changeModal()"
-        class="flex items-center space-x-4 px-8 py-2.5 hover:bg-violet-100">
+        class="flex items-center space-x-4 px-4 xs:px-8 py-2.5 hover:bg-violet-100">
         <div class="flex-none">
           <img src="../../assets/logo.png" alt="logo" class="w-8">
         </div>

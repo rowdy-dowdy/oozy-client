@@ -41,6 +41,16 @@ export default defineComponent({
     const user = computed(() => store.state.user.user)
 
     watch(
+      (user),
+      async (v) => {
+        if (!v.guest) {
+          await store.dispatch('user/getRandomUser')
+        }
+      }
+    )
+    
+
+    watch(
       nameRoute,
       newRouteName => {
         if (arrayHasNotSidebarLeft.indexOf(newRouteName) >= 0)
@@ -59,12 +69,10 @@ export default defineComponent({
 
       if (!firstLoad) {
         await store.dispatch('user/logged')
-        firstLoad = true
+        firstLoad = TextTrackCueList
+        
       }
-
-      console.log(user.value.guest);
       
-
       if (user.value.guest) {
         if (to.name == 'home-main' || to.name == 'login' || to.name == 'signup') {
           next()
@@ -73,7 +81,7 @@ export default defineComponent({
         }
       }
       else {
-        if (to.name == 'home-main') {
+        if (to.name == 'home-main' || to.name == 'login' || to.name == 'signup') {
           next({name: 'home'})
         } else {
           next()
@@ -87,7 +95,7 @@ export default defineComponent({
       // change title
       if (to.meta.title) {
         if (to.matched[0].name == 'profile')
-          document.title = `${user.value.realName} (@${user.value.username}) / Oozy`
+          document.title = `${user.value.name} (@${user.value.username}) / Oozy`
         else
           document.title = to.meta.title
       } 

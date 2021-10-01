@@ -59,42 +59,23 @@
             <h4 class="font-semibold">Gợi ý theo dõi</h4>
           </div>
           <ul class="flex flex-col text-sm">
-            <li class="px-4 py-3 hover:bg-violet-100 cursor-pointer">
-              <div class="flex items-center space-x-3">
-                <div class="flex-none w-11 h-11 rounded-full overflow-hidden">
-                  <img src="../assets/7BQ093uo_normal.jpg" alt="" class="img-cover" loading="lazy">
+            <template v-if="listSugges.length > 0">
+              <li v-for="v in listSugges" :key="v.id" class="px-4 py-3 hover:bg-violet-100 cursor-pointer">
+                <div class="flex items-center space-x-3">
+                  <div class="flex-none w-11 h-11 rounded-full overflow-hidden">
+                    <img v-if="v.avatar != ''" :src="v.avatar" alt="" class="img-cover" loading="lazy">
+                    <div v-else :data-color="v.color" class="w-full h-full rounded-full overflow-hidden">
+                      <span class="icon-bar font-black text-white text-xl select-none uppercase">{{ v.shortName }}</span>
+                    </div>
+                  </div>
+                  <div class="flex-grow min-w-0">
+                    <h2 class="font-semibold truncate">{{ v.name }}</h2>
+                    <p class="text-gray-600 truncate">@{{ v.username }}</p>
+                  </div>
+                  <button class="flex-none px-3.5 py-1.5 bg-trueGray-900 hover:bg-trueGray-800 text-white text-xs rounded-full font-semibold">Theo dõi</button>
                 </div>
-                <div class="flex-grow min-w-0">
-                  <h2 class="font-semibold truncate">Quyên nè</h2>
-                  <p class="text-gray-600 truncate">@quyen20042004</p>
-                </div>
-                <button class="flex-none px-3.5 py-1.5 bg-trueGray-900 hover:bg-trueGray-800 text-white text-xs rounded-full font-semibold">Theo dõi</button>
-              </div>
-            </li>
-            <li class="px-4 py-3 hover:bg-violet-100 cursor-pointer">
-              <div class="flex items-center space-x-3">
-                <div class="flex-none w-11 h-11 rounded-full overflow-hidden">
-                  <img src="../assets/XoyOVUKk_normal.jpg" alt="" class="img-cover" loading="lazy">
-                </div>
-                <div class="flex-grow min-w-0">
-                  <h2 class="font-semibold truncate">😶</h2>
-                  <p class="text-gray-600 truncate">@chiecheodamdang</p>
-                </div>
-                <button class="flex-none px-3.5 py-1.5 bg-trueGray-900 hover:bg-trueGray-800 text-white text-xs rounded-full font-semibold">Theo dõi</button>
-              </div>
-            </li>
-            <li class="px-4 py-3 hover:bg-violet-100 cursor-pointer">
-              <div class="flex items-center space-x-3">
-                <div class="flex-none w-11 h-11 rounded-full overflow-hidden">
-                  <img src="../assets/U6dz6k-A_normal.jpg" alt="" class="img-cover" loading="lazy">
-                </div>
-                <div class="flex-grow min-w-0">
-                  <h2 class="font-semibold truncate">Ha_hoang</h2>
-                  <p class="text-gray-600 truncate">@ha_hoang0104</p>
-                </div>
-                <button class="flex-none px-3.5 py-1.5 bg-trueGray-900 hover:bg-trueGray-800 text-white text-xs rounded-full font-semibold">Theo dõi</button>
-              </div>
-            </li>
+              </li>
+            </template>
       
             <li class="px-4 py-3 hover:bg-violet-100 cursor-pointer">
               <p class="text-violet-600 text-sm">Hiển thị thêm</p>
@@ -116,7 +97,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRef } from 'vue'
+import { computed, defineComponent, ref, toRef } from 'vue'
+import { useStore } from 'vuex'
 import Loading from '../components/loading/Loading.vue'
 
 export default defineComponent({
@@ -138,6 +120,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const store = useStore()
     //props
     const showSearch = toRef(props,'search')
     const showTrend = toRef(props,'trend')
@@ -151,7 +134,11 @@ export default defineComponent({
       searchDropdown.value = false
     }
 
-    return { textSearch, searchDropdown, searchDropdownHidden, showSearch, showTrend, showSugges }
+    var listSugges = computed(() => store.getters['user/getUserRandomInListUser'])
+
+    return { 
+      textSearch, searchDropdown, searchDropdownHidden, showSearch, 
+      showTrend, showSugges, listSugges }
   },
 })
 </script>

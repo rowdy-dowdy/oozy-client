@@ -11,7 +11,7 @@
           </div>
 
           <div class="flex-grow min-w-0">
-            <h2 class="text-lg font-semibold">{{ user.realName }}</h2>
+            <h2 class="text-lg font-semibold">{{ userInfo?.name || 'Name' }}</h2>
             <p class="text-xs text-gray-600 -mt-1">0 Wit</p>
           </div>
         </div>
@@ -25,26 +25,39 @@
             <div class="flex h-11 items-end justify-between">
               <div class="w-1/4 flex-none">
                 <div class="pt-[100%] relative">
-                    <router-link :to="`/${user.username}/photo`" class="group absolute w-full h-full top-0 left-0 rounded-full bg-violet-200 border-4 border-white overflow-hidden cursor-pointer">
-                      <img src="../assets/default_profile_200x200.png" alt="" class="img-full">
+                    <router-link :to="`/${userInfo?.username}/photo`" class="group absolute w-full h-full top-0 left-0 rounded-full bg-violet-200 border-4 border-white overflow-hidden cursor-pointer">
+                      <img v-if="!userInfo?.avatar" src="../assets/default_profile_200x200.png" alt="" class="img-full">
+                      <img v-else :src="userInfo?.avatar" alt="" class="img-full">
                       <div class="absolute w-full h-full top-0 left-0 bg-transparent group-hover:bg-black/30 transition-all duration-300 ease-in-out"></div>
                     </router-link>
                 </div>
               </div>
 
-              <button class="bg-white px-4 py-2 border border-violet-300 rounded-full font-semibold text-xs hover:bg-violet-300">
+              <button v-if="myself" class="bg-white px-4 py-2 border border-violet-300 rounded-full font-semibold text-xs hover:bg-violet-300">
                 Thiết lập hồ sơ
               </button>
+              <template v-else>
+                <button v-if="friendShip == 'request-sent'" class="relative group bg-white px-4 py-2 border overflow-hidden border-violet-300 rounded-full font-semibold text-xs hover:bg-violet-300">
+                  Chờ xác nhận
+                  <span class="absolute w-full h-full top-0 left-0 opacity-0 group-hover:opacity-100 bg-violet-500 text-white  flex items-center justify-center">Hủy kết bạn</span>
+                </button>
+                <button v-else-if="friendShip == 'friends'" class="bg-white px-4 py-2 border border-red-500 rounded-full font-semibold text-xs hover:bg-red-500 hover:text-white">
+                  <span>Xóa bạn</span>
+                </button>
+                <button v-else class="bg-white px-4 py-2 border border-violet-300 rounded-full font-semibold text-xs hover:bg-violet-300">
+                  Kết bạn
+                </button>
+              </template>
             </div>
 
             <div>
-              <h2 class="font-semibold text-base">{{ user.realName }}</h2>
-              <p class="text-gray-600">@{{ user.username }}</p>
+              <h2 class="font-semibold text-base">{{ userInfo?.name || 'Name' }}</h2>
+              <p class="text-gray-600">@{{ userInfo?.username || 'Username' }}</p>
               <p class="text-gray-600 pt-2">
                 <span class="">
                   <i class='bx bx-calendar' ></i>
                 </span>
-                Đã tham gia tháng {{ new Date(user.create_at).getMonth() + 1 }} năm {{ new Date(user.create_at).getFullYear() }}
+                Đã tham gia tháng {{ new Date(userInfo?.createdAt).getMonth() + 1 }} năm {{ new Date(userInfo?.createdAt).getFullYear() }}
               </p>
 
               <p class="pt-2 text-gray-600">
@@ -132,11 +145,14 @@
     </div>
   </div>
 
-  <router-view name="photo"/>
+  <!-- modal -->
+  <div class="fixed"></div>
+
+  <router-view name="photo" :avatar="userInfo?.avatar"/>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, watch } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import Loading from '../components/loading/Loading.vue'
@@ -153,6 +169,41 @@ export default defineComponent({
     const router = useRouter()
 
     const user = computed(() => store.state.user.user)
+    var userInfo = ref()
+    var myself = ref<boolean>(true)
+    var friendShip = ref<string>("")
+
+    async function checkYourProfile (params) {
+      if (params.username == user.value.username) {
+        userInfo.value = user.value
+        myself.value = true
+      } else {
+        myself.value = false
+        try {
+          var resultUser = await store.dispatch('user/getUserByUsername', params.username)
+          userInfo.value = resultUser
+
+          var type = await store.dispatch('user/checkTypeFriend',resultUser.id)
+          friendShip.value = type
+        } catch (err) {
+          router.push('/home')
+        }
+        
+      }
+    }
+
+    checkYourProfile(route.params)
+
+    watch(
+      (route),
+      async (v) => {
+        if (route.name != 'profile_default')
+          return
+        
+        await checkYourProfile(route.params)
+      }
+    )
+
 
     // change route
     const defaultPathRoute = route.path.split('/')[1]
@@ -186,7 +237,7 @@ export default defineComponent({
       }
     })
 
-    return { user }
+    return { user, userInfo, myself, friendShip }
   },
 })
 </script>
